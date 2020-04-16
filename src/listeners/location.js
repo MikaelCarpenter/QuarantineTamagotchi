@@ -19,16 +19,6 @@ const GetOutApp = (props) => {
     }
   }, [homeLocation]);
 
-  useEffect(() => {
-    const cb = Location.watchPositionAsync(
-      { timeInterval: 2000, accuracy: Location.Accuracy.Highest },
-      handlePositionWatch
-    );
-    return () => {
-      cb.then(({ remove }) => remove());
-    };
-  }, [handlePositionWatch]);
-
   const handlePositionWatch = useCallback(
     (observedLocation) => {
       const {
@@ -47,6 +37,16 @@ const GetOutApp = (props) => {
     },
     [increment, homeLocation]
   );
+
+  useEffect(() => {
+    const cb = Location.watchPositionAsync(
+      { timeInterval: 2000, accuracy: Location.Accuracy.Highest },
+      handlePositionWatch
+    );
+    return () => {
+      cb.then(({ remove }) => remove());
+    };
+  }, [handlePositionWatch]);
 
   const saveHomeLocation = useCallback(() => {
     const save = async () => {
