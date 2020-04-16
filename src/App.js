@@ -32,7 +32,7 @@ const App: () => React$Node = () => {
           <Text style={styles.pointCounter}>${points}</Text>
           <View style={styles.avatarContainer}>
             <Image
-              source={require('../assets/images/Idle.gif')}
+              source={require('../assets/animations/short/Idle.gif')}
               style={styles.avatar}
             />
           </View>
