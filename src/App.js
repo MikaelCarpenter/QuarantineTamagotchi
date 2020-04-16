@@ -26,9 +26,9 @@ const App: () => React$Node = () => {
 
   return (
     <View style={styles.appContainer}>
-      <SafeAreaView>
+      <SafeAreaView style={{flex: 1, width: '100%'}}>
         <Text style={styles.appTitle}>Quarantine Tamagotchi</Text>
-        <View>
+        <View style={{flex: 4}}>
           <Text style={styles.pointCounter}>${points}</Text>
           <View style={styles.avatarContainer}>
             <Image
@@ -36,6 +36,12 @@ const App: () => React$Node = () => {
               style={styles.avatar}
             />
           </View>
+        </View>
+        <View style={styles.menuContainer}>
+          <Text>Menu</Text>
+        </View>
+        <View style={styles.buttonContainer}>
+          <Text>Button</Text>
         </View>
       </SafeAreaView>
     </View>
@@ -46,14 +52,17 @@ const styles = StyleSheet.create({
   appContainer: {
     backgroundColor: '#f2f3f4',
     alignItems: 'center',
-    ...StyleSheet.absoluteFillObject,
+    paddingLeft: 32,
+    paddingRight: 32,
+    ...StyleSheet.absoluteFill,
   },
 
   appTitle: {
+    flex: 1,
     fontFamily: 'Connection III',
     fontWeight: '900',
     fontSize: 24,
-    marginBottom: 100,
+    letterSpacing: 1.4,
     textAlign: 'center',
   },
 
@@ -66,8 +75,8 @@ const styles = StyleSheet.create({
   },
 
   avatarContainer: {
-    height: 300,
-    width: 300,
+    flex: 1,
+    width: '100%',
     borderWidth: 1,
     borderColor: '#000',
     borderRadius: 8,
@@ -79,6 +88,18 @@ const styles = StyleSheet.create({
   avatar: {
     width: 32,
     height: 32,
+  },
+
+  menuContainer: {
+    flex: 4,
+    width: '100%',
+    marginTop: 32,
+  },
+
+  buttonContainer: {
+    flex: 1,
+    width: '100%',
+    marginTop: 32,
   },
 });
 
