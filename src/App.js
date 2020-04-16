@@ -10,7 +10,7 @@ import React, { useCallback, useReducer } from 'react';
 import { Image, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import GetOutApp from './listeners/location';
 
-const INIT_STATE = { points: 500, showActionMenu: false };
+const INIT_STATE = { points: 500, showActionMenu: false, showSuccess: false };
 
 const reducer = (state, action) => {
   const { points } = state;
@@ -18,17 +18,23 @@ const reducer = (state, action) => {
     case 'OPEN_ACTIONS':
       return { ...state, showActionMenu: true };
     case 'WALK':
-      return { points: points + 50, showActionMenu: false };
+      return { points: points + 50, showActionMenu: false, showSuccess: true };
+    case 'END_SUCCESS':
+      return { ...state, showSuccess: false };
     default:
       return state;
   }
 };
 
 const App: () => React$Node = () => {
-  const [{ points, showActionMenu }, dispatch] = useReducer(reducer, INIT_STATE);
+  const [{ points, showActionMenu, showSuccess }, dispatch] = useReducer(reducer, INIT_STATE);
 
   const handleWalkCompleted = useCallback(() => {
     dispatch({ type: 'WALK' });
+
+    setTimeout(() => {
+      dispatch({ type: 'END_SUCCESS' });
+    }, 3000);
   }, []);
 
   const handleActionPress = useCallback(() => {
@@ -42,6 +48,12 @@ const App: () => React$Node = () => {
         <View style={{ flex: 4 }}>
           <Text style={styles.pointCounter}>${points}</Text>
           <View style={styles.avatarContainer}>
+            {showSuccess && (
+              <>
+                <Image source={require('../assets/animations/fireworks_1.gif')} style={styles.fireworks1} />
+                <Image source={require('../assets/animations/fireworks_2.gif')} style={styles.fireworks2} />
+              </>
+            )}
             <Image source={require('../assets/animations/plain_idle.gif')} style={styles.avatar} />
           </View>
         </View>
@@ -120,6 +132,22 @@ const styles = StyleSheet.create({
   avatar: {
     width: 32,
     height: 32,
+  },
+
+  fireworks1: {
+    position: 'absolute',
+    top: 16,
+    left: 32,
+    width: 64,
+    height: 64,
+  },
+
+  fireworks2: {
+    position: 'absolute',
+    top: 64,
+    right: 32,
+    width: 64,
+    height: 64,
   },
 
   menuContainer: {
