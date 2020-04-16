@@ -6,42 +6,51 @@
  * @flow strict-local
  */
 
-import React, {useReducer} from 'react';
-import {Image, SafeAreaView, StyleSheet, Text, View} from 'react-native';
+import React, { useCallback, useReducer, useState } from 'react';
+import { Image, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-const INIT_STATE = {points: 500};
+const INIT_STATE = { points: 500 };
 
 const reducer = (state, action) => {
-  const {points} = state;
+  const { points } = state;
   switch (action.type) {
     case 'WALK':
-      return {points: points + 50};
+      return { points: points + 50 };
     default:
       return state;
   }
 };
 
 const App: () => React$Node = () => {
-  const [{points}, dispatch] = useReducer(reducer, INIT_STATE);
+  const [{ points }, dispatch] = useReducer(reducer, INIT_STATE);
+
+  const [showActionMenu, setShowActionMenu] = useState(false);
+
+  const handleActionPress = useCallback(() => {
+    setShowActionMenu(true);
+  }, []);
 
   return (
     <View style={styles.appContainer}>
-      <SafeAreaView style={{flex: 1, width: '100%'}}>
+      <SafeAreaView style={{ flex: 1, width: '100%' }}>
         <Text style={styles.appTitle}>Quarantine Tamagotchi</Text>
-        <View style={{flex: 4}}>
+        <View style={{ flex: 4 }}>
           <Text style={styles.pointCounter}>${points}</Text>
           <View style={styles.avatarContainer}>
-            <Image
-              source={require('../assets/animations/Idle.gif')}
-              style={styles.avatar}
-            />
+            <Image source={require('../assets/animations/Idle.gif')} style={styles.avatar} />
           </View>
         </View>
-        <View style={styles.menuContainer}>
-          <Text>Menu</Text>
-        </View>
+        <View style={styles.menuContainer}>{showActionMenu && <Text>Menu</Text>}</View>
         <View style={styles.buttonContainer}>
-          <Text>Button</Text>
+          <TouchableOpacity style={styles.button} onPress={handleActionPress}>
+            <Text style={styles.buttonText}>?</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.button} onPress={handleActionPress}>
+            <Text style={styles.buttonText}>$</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.button} onPress={handleActionPress}>
+            <Text style={styles.buttonText}>A</Text>
+          </TouchableOpacity>
         </View>
       </SafeAreaView>
     </View>
@@ -52,8 +61,8 @@ const styles = StyleSheet.create({
   appContainer: {
     backgroundColor: '#f2f3f4',
     alignItems: 'center',
-    paddingLeft: 32,
-    paddingRight: 32,
+    paddingLeft: 40,
+    paddingRight: 40,
     ...StyleSheet.absoluteFill,
   },
 
@@ -100,6 +109,24 @@ const styles = StyleSheet.create({
     flex: 1,
     width: '100%',
     marginTop: 32,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+
+  button: {
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    borderWidth: 4,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+
+  buttonText: {
+    fontFamily: 'Connection III',
+    fontSize: 32,
+    fontWeight: '600',
+    marginTop: 8,
   },
 });
 
