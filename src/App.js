@@ -6,25 +6,30 @@
  * @flow strict-local
  */
 
-import React from 'react';
+import React, {useReducer} from 'react';
 import {Image, SafeAreaView, StyleSheet, Text, View} from 'react-native';
 
-const App: () => React$Node = () => {
-  return (
-    // <View styles={styles.appContainer}>
-    //   <StatusBar barStyle="dark-content" />
-    //   <SafeAreaView>
-    //     <View styles={styles.avatarContainer}>
-    //       <Text>Test</Text>
-    //     </View>
-    //   </SafeAreaView>
-    // </View>
+const INIT_STATE = {points: 500};
 
+const reducer = (state, action) => {
+  const {points} = state;
+  switch (action.type) {
+    case 'WALK':
+      return {points: points + 50};
+    default:
+      return state;
+  }
+};
+
+const App: () => React$Node = () => {
+  const [{points}, dispatch] = useReducer(reducer, INIT_STATE);
+
+  return (
     <View style={styles.appContainer}>
       <SafeAreaView>
         <Text style={styles.appTitle}>Quarantine Tamagotchi</Text>
         <View>
-          <Text style={styles.pointCounter}>$209</Text>
+          <Text style={styles.pointCounter}>${points}</Text>
           <View style={styles.avatarContainer}>
             <Image
               source={require('../assets/images/Idle.gif')}
