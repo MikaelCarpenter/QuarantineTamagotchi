@@ -8,6 +8,7 @@
 
 import React, { useCallback, useReducer } from 'react';
 import { Image, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import GetOutApp from './listeners/location';
 
 const INIT_STATE = { points: 500, showActionMenu: false };
 
@@ -73,6 +74,7 @@ const App: () => React$Node = () => {
             <Text style={styles.buttonText}>A</Text>
           </TouchableOpacity>
         </View>
+        <GetOutApp />
       </SafeAreaView>
     </View>
   );
