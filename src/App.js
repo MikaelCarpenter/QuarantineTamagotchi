@@ -10,15 +10,21 @@ import React, { useCallback, useReducer } from 'react';
 import { Image, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import GetOutApp from './listeners/location';
 
-const INIT_STATE = { points: 500, showActionMenu: false, showSuccess: false };
+const INIT_STATE = { points: 500, showActionMenu: false, showSuccess: false, showStore: false, items: [] };
 
 const reducer = (state, action) => {
-  const { points } = state;
+  const { points, items } = state;
   switch (action.type) {
     case 'OPEN_ACTIONS':
       return { ...state, showActionMenu: true };
+    case 'OPEN_STORE':
+      return { ...state, showStore: true };
     case 'WALK':
-      return { points: points + 50, showActionMenu: false, showSuccess: true };
+      return { ...state, points: points + 50, showActionMenu: false, showSuccess: true };
+    case 'BUY_FLOWERS':
+      return { ...state, showStore: false, items: items.concat(['Flowers']), points: points - 100 };
+    case 'BUY_DRESSER':
+      return { ...state, showStore: false, items: items.concat(['Dresser']), points: points - 400 };
     case 'END_SUCCESS':
       return { ...state, showSuccess: false };
     default:
@@ -27,18 +33,30 @@ const reducer = (state, action) => {
 };
 
 const App: () => React$Node = () => {
-  const [{ points, showActionMenu, showSuccess }, dispatch] = useReducer(reducer, INIT_STATE);
+  const [{ points, items, showActionMenu, showSuccess, showStore }, dispatch] = useReducer(reducer, INIT_STATE);
 
   const handleWalkCompleted = useCallback(() => {
     dispatch({ type: 'WALK' });
 
     setTimeout(() => {
       dispatch({ type: 'END_SUCCESS' });
-    }, 3000);
+    }, 2500);
+  }, []);
+
+  const handleBuyFlowers = useCallback(() => {
+    dispatch({ type: 'BUY_FLOWERS' });
+  }, []);
+
+  const handleBuyDresser = useCallback(() => {
+    dispatch({ type: 'BUY_DRESSER' });
   }, []);
 
   const handleActionPress = useCallback(() => {
     dispatch({ type: 'OPEN_ACTIONS' });
+  }, []);
+
+  const handleStorePress = useCallback(() => {
+    dispatch({ type: 'OPEN_STORE' });
   }, []);
 
   return (
@@ -54,6 +72,12 @@ const App: () => React$Node = () => {
                 <Image source={require('../assets/animations/fireworks_2.gif')} style={styles.fireworks2} />
               </>
             )}
+            {items.includes('Flowers') && (
+              <Image source={require('../assets/static/2x/Flowers.gif')} style={styles.flowers} />
+            )}
+            {items.includes('Dresser') && (
+              <Image source={require('../assets/static/2x/Dresser.gif')} style={styles.dresser} />
+            )}
             <Image source={require('../assets/animations/plain_idle.gif')} style={styles.avatar} />
           </View>
         </View>
@@ -64,13 +88,26 @@ const App: () => React$Node = () => {
                 <Text style={styles.actionMenuOption}>• Went for a walk</Text>
               </TouchableOpacity>
               <TouchableOpacity onPress={handleWalkCompleted}>
+                <Text style={styles.actionMenuOption}>• Worked out</Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={handleWalkCompleted}>
                 <Text style={styles.actionMenuOption}>• Journaled</Text>
               </TouchableOpacity>
               <TouchableOpacity onPress={handleWalkCompleted}>
-                <Text style={styles.actionMenuOption}>• Cooked a healthy meal</Text>
-              </TouchableOpacity>
-              <TouchableOpacity onPress={handleWalkCompleted}>
                 <Text style={styles.actionMenuOption}>• Called a friend</Text>
+              </TouchableOpacity>
+            </>
+          )}
+          {showStore && (
+            <>
+              <TouchableOpacity onPress={handleBuyFlowers}>
+                <Text style={styles.actionMenuOption}>• Flowers-$100</Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={handleBuyDresser}>
+                <Text style={styles.actionMenuOption}>• Dresser-$400</Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={handleBuyFlowers}>
+                <Text style={styles.actionMenuOption}>• Picture-$700</Text>
               </TouchableOpacity>
             </>
           )}
@@ -79,7 +116,7 @@ const App: () => React$Node = () => {
           <TouchableOpacity style={styles.button} onPress={handleActionPress}>
             <Text style={styles.buttonText}>?</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.button} onPress={handleActionPress}>
+          <TouchableOpacity style={styles.button} onPress={handleStorePress}>
             <Text style={styles.buttonText}>$</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.button} onPress={handleActionPress}>
@@ -130,6 +167,22 @@ const styles = StyleSheet.create({
   },
 
   avatar: {
+    width: 32,
+    height: 32,
+  },
+
+  flowers: {
+    position: 'absolute',
+    bottom: 4,
+    right: 16,
+    width: 32,
+    height: 32,
+  },
+
+  dresser: {
+    position: 'absolute',
+    bottom: 4,
+    left: 16,
     width: 32,
     height: 32,
   },
