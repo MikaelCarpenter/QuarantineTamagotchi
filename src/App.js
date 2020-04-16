@@ -6,28 +6,32 @@
  * @flow strict-local
  */
 
-import React, { useCallback, useReducer, useState } from 'react';
+import React, { useCallback, useReducer } from 'react';
 import { Image, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-const INIT_STATE = { points: 500 };
+const INIT_STATE = { points: 500, showActionMenu: false };
 
 const reducer = (state, action) => {
   const { points } = state;
   switch (action.type) {
+    case 'OPEN_ACTIONS':
+      return { ...state, showActionMenu: true };
     case 'WALK':
-      return { points: points + 50 };
+      return { points: points + 50, showActionMenu: false };
     default:
       return state;
   }
 };
 
 const App: () => React$Node = () => {
-  const [{ points }, dispatch] = useReducer(reducer, INIT_STATE);
+  const [{ points, showActionMenu }, dispatch] = useReducer(reducer, INIT_STATE);
 
-  const [showActionMenu, setShowActionMenu] = useState(false);
+  const handleWalkCompleted = useCallback(() => {
+    dispatch({ type: 'WALK' });
+  }, []);
 
   const handleActionPress = useCallback(() => {
-    setShowActionMenu(true);
+    dispatch({ type: 'OPEN_ACTIONS' });
   }, []);
 
   return (
@@ -37,10 +41,27 @@ const App: () => React$Node = () => {
         <View style={{ flex: 4 }}>
           <Text style={styles.pointCounter}>${points}</Text>
           <View style={styles.avatarContainer}>
-            <Image source={require('../assets/animations/Idle.gif')} style={styles.avatar} />
+            <Image source={require('../assets/animations/plain_idle.gif')} style={styles.avatar} />
           </View>
         </View>
-        <View style={styles.menuContainer}>{showActionMenu && <Text>Menu</Text>}</View>
+        <View style={styles.menuContainer}>
+          {showActionMenu && (
+            <>
+              <TouchableOpacity onPress={handleWalkCompleted}>
+                <Text style={styles.actionMenuOption}>• Went for a walk</Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={handleWalkCompleted}>
+                <Text style={styles.actionMenuOption}>• Journaled</Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={handleWalkCompleted}>
+                <Text style={styles.actionMenuOption}>• Cooked a healthy meal</Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={handleWalkCompleted}>
+                <Text style={styles.actionMenuOption}>• Called a friend</Text>
+              </TouchableOpacity>
+            </>
+          )}
+        </View>
         <View style={styles.buttonContainer}>
           <TouchableOpacity style={styles.button} onPress={handleActionPress}>
             <Text style={styles.buttonText}>?</Text>
@@ -103,6 +124,12 @@ const styles = StyleSheet.create({
     flex: 4,
     width: '100%',
     marginTop: 32,
+  },
+
+  actionMenuOption: {
+    fontFamily: 'Connection III',
+    fontSize: 24,
+    marginBottom: 8,
   },
 
   buttonContainer: {
