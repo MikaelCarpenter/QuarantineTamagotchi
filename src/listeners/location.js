@@ -1,47 +1,54 @@
-import React, {useState, useCallback} from 'react';
-
-import {Text, Button} from 'react-native';
+import React, { useState, useCallback, useEffect } from 'react';
+import { Text, Button } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 
 import * as Location from 'expo-location';
 
 const GetOutApp = () => {
-  const [location, setLocation] = useState(null);
-  const [errorMsg, setErrorMsg] = useState(null);
   const [homeLocation, setHomeLocation] = useState(null);
 
-  // useEffect(() => {
-  //   (async () => {
-  //     let {status} = await Location.requestPermissionsAsync();
-  //     if (status !== 'granted') {
-  //       setErrorMsg('Permission to access location was denied');
-  //     }
-  //
-  //     let location = await Location.getCurrentPositionAsync({});
-  //     setLocation(location);
-  //     console.log("ASD")
-  //   })();
-  // });
+  useEffect(() => {
+    const getMyValue = async () => {
+      await Location.requestPermissionsAsync();
+      const value = await AsyncStorage.getItem('@home_location');
+      setHomeLocation(JSON.parse(value));
+    };
+    if (!homeLocation) {
+      getMyValue();
+    }
+  }, [homeLocation]);
 
-  // let text = 'Waiting..';
-  // if (errorMsg) {
-  //   text = errorMsg;
-  // } else if (location) {
-  //   text = JSON.stringify(location);
-  // }
+  useEffect(() => {
+    const cb = Location.watchPositionAsync({}, handlePositionWatch);
+    return () => {
+      cb.then(({ remove }) => remove());
+    };
+  }, [handlePositionWatch]);
+
+  const handlePositionWatch = useCallback(
+    (observedLocation) => {
+      const {
+        coords: { longitude, latitude },
+      } = observedLocation;
+
+      if (homeLocation) {
+        const { longitude: homeLon, latitude: homeLat } = homeLocation;
+        const diff = getDistanceFromLatLonInKm(homeLat, homeLon, latitude, longitude);
+        if (diff > 1) {
+          console.log('addPoints');
+        }
+      }
+    },
+    [homeLocation]
+  );
 
   const saveHomeLocation = useCallback(() => {
     const save = async () => {
       const currentLocation = await Location.getCurrentPositionAsync({
-        accuracy: Location.Accuracy.High,
+        accuracy: Location.Accuracy.Balanced,
       });
-
       try {
-        await AsyncStorage.setItem(
-          '@home_location',
-          JSON.stringify(currentLocation.coords),
-        );
-
+        await AsyncStorage.setItem('@home_location', JSON.stringify(currentLocation.coords));
         setHomeLocation(currentLocation.coords);
       } catch (e) {
         // saving error
@@ -50,13 +57,43 @@ const GetOutApp = () => {
     save();
   }, []);
 
+  const clearHome = useCallback(() => {
+    const removeValue = async () => {
+      try {
+        await AsyncStorage.removeItem('@home_location');
+        setHomeLocation(null);
+      } catch (e) {
+        // remove error
+      }
+    };
+    removeValue();
+  }, []);
+
   return !homeLocation ? (
     <>
       <Button title={'Set Home Location'} onPress={saveHomeLocation} />
     </>
   ) : (
-    <Text>home: {JSON.stringify(homeLocation)}</Text>
+    <>
+      <Button title={'Clear Home Location'} onPress={clearHome} />
+    </>
   );
 };
+
+function getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
+  var R = 6371; // Radius of the earth in km
+  var dLat = deg2rad(lat2 - lat1); // deg2rad below
+  var dLon = deg2rad(lon2 - lon1);
+  var a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+  var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  var d = R * c; // Distance in km
+  return d;
+}
+
+function deg2rad(deg) {
+  return deg * (Math.PI / 180);
+}
 
 export default GetOutApp;
