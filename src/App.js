@@ -42,6 +42,11 @@ const reducer = (state, action) => {
         showSuccess: true,
         avatar: avatar.split('_')[0] + '_curls',
       };
+    case 'OUTSIDE':
+      return {
+        ...state,
+        points: points + 1,
+      };
     case 'BUY_FLOWERS':
       return { ...state, showStore: false, items: items.concat(['Flowers']), points: points - 100 };
     case 'BUY_DRESSER':
@@ -80,6 +85,10 @@ const App: () => React$Node = () => {
       dispatch({ type: 'END_SUCCESS', avatar: initialAvatar });
     }, 2500);
   }, [avatar]);
+
+  const handleBeingOutside = useCallback(() => {
+    dispatch({ type: 'OUTSIDE' });
+  }, []);
 
   const handleBuyFlowers = useCallback(() => {
     dispatch({ type: 'BUY_FLOWERS' });
@@ -194,7 +203,7 @@ const App: () => React$Node = () => {
             <Text style={styles.buttonText}>A</Text>
           </TouchableOpacity>
         </View>
-        <GetOutApp />
+        <GetOutApp increment={handleBeingOutside} />
       </SafeAreaView>
     </View>
   );

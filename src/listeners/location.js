@@ -4,7 +4,8 @@ import AsyncStorage from '@react-native-community/async-storage';
 
 import * as Location from 'expo-location';
 
-const GetOutApp = () => {
+const GetOutApp = (props) => {
+  const { increment } = props;
   const [homeLocation, setHomeLocation] = useState(null);
 
   useEffect(() => {
@@ -40,10 +41,11 @@ const GetOutApp = () => {
         console.log(diff);
         if (diff > 0.1) {
           console.log('addPoints');
+          increment();
         }
       }
     },
-    [homeLocation]
+    [increment, homeLocation]
   );
 
   const saveHomeLocation = useCallback(() => {
