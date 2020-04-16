@@ -19,7 +19,10 @@ const GetOutApp = () => {
   }, [homeLocation]);
 
   useEffect(() => {
-    const cb = Location.watchPositionAsync({}, handlePositionWatch);
+    const cb = Location.watchPositionAsync(
+      { timeInterval: 2000, accuracy: Location.Accuracy.Highest },
+      handlePositionWatch
+    );
     return () => {
       cb.then(({ remove }) => remove());
     };
@@ -34,7 +37,8 @@ const GetOutApp = () => {
       if (homeLocation) {
         const { longitude: homeLon, latitude: homeLat } = homeLocation;
         const diff = getDistanceFromLatLonInKm(homeLat, homeLon, latitude, longitude);
-        if (diff > 1) {
+        console.log(diff);
+        if (diff > 0.1) {
           console.log('addPoints');
         }
       }
