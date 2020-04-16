@@ -20,16 +20,28 @@ const INIT_STATE = {
 };
 
 const reducer = (state, action) => {
-  const { points, items } = state;
+  const { points, items, avatar } = state;
   switch (action.type) {
     case 'OPEN_ACTIONS':
       return { ...state, showActionMenu: true, showStore: false };
     case 'OPEN_STORE':
       return { ...state, showStore: true, showActionMenu: false };
     case 'WALK':
-      return { ...state, points: points + 50, showActionMenu: false, showSuccess: true };
+      return {
+        ...state,
+        points: points + 50,
+        showActionMenu: false,
+        showSuccess: true,
+        avatar: avatar.split('_')[0] + '_walk_left',
+      };
     case 'CURLS':
-      return { ...state, points: points + 100, showActionMenu: false, showSuccess: true, avatar: 'plain_curls' };
+      return {
+        ...state,
+        points: points + 100,
+        showActionMenu: false,
+        showSuccess: true,
+        avatar: avatar.split('_')[0] + '_curls',
+      };
     case 'BUY_FLOWERS':
       return { ...state, showStore: false, items: items.concat(['Flowers']), points: points - 100 };
     case 'BUY_DRESSER':
@@ -39,7 +51,7 @@ const reducer = (state, action) => {
     case 'BUY_HEADBAND':
       return { ...state, showStore: false, avatar: 'headband_idle', points: points - 50 };
     case 'END_SUCCESS':
-      return { ...state, showSuccess: false, avatar: 'plain_idle' };
+      return { ...state, showSuccess: false, avatar: action.avatar };
     default:
       return state;
   }
@@ -50,20 +62,24 @@ const App: () => React$Node = () => {
   const { avatar, points, items, showActionMenu, showSuccess, showStore } = state;
 
   const handleWalkCompleted = useCallback(() => {
+    const initialAvatar = avatar;
+
     dispatch({ type: 'WALK' });
 
     setTimeout(() => {
-      dispatch({ type: 'END_SUCCESS' });
+      dispatch({ type: 'END_SUCCESS', avatar: initialAvatar });
     }, 2500);
-  }, []);
+  }, [avatar]);
 
   const handleCurlsCompleted = useCallback(() => {
+    const initialAvatar = avatar;
+
     dispatch({ type: 'CURLS' });
 
     setTimeout(() => {
-      dispatch({ type: 'END_SUCCESS' });
+      dispatch({ type: 'END_SUCCESS', avatar: initialAvatar });
     }, 2500);
-  }, []);
+  }, [avatar]);
 
   const handleBuyFlowers = useCallback(() => {
     dispatch({ type: 'BUY_FLOWERS' });
@@ -91,10 +107,18 @@ const App: () => React$Node = () => {
 
   const avatarImage = useMemo(() => {
     switch (avatar) {
+      case 'plain_idle':
+        return require('../assets/animations/plain_idle.gif');
       case 'plain_curls':
         return require('../assets/animations/plain_curls.gif');
+      case 'plain_walk_left':
+        return require('../assets/animations/plain_walk_left.gif');
       case 'headband_idle':
         return require('../assets/animations/headband_idle.gif');
+      case 'headband_curls':
+        return require('../assets/animations/headband_curls.gif');
+      case 'headband_walk_left':
+        return require('../assets/animations/headband_walk_left.gif');
       default:
         return require('../assets/animations/plain_idle.gif');
     }
