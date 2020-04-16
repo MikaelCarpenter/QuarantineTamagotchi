@@ -8,6 +8,7 @@
 
 import React, {useReducer} from 'react';
 import {Image, SafeAreaView, StyleSheet, Text, View} from 'react-native';
+import GetOutApp from './listeners/location';
 
 const INIT_STATE = {points: 500};
 
@@ -37,6 +38,7 @@ const App: () => React$Node = () => {
             />
           </View>
         </View>
+        <GetOutApp />
       </SafeAreaView>
     </View>
   );
