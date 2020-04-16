@@ -7,14 +7,7 @@
  */
 
 import React from 'react';
-import {
-  SafeAreaView,
-  StyleSheet,
-  ScrollView,
-  View,
-  Text,
-  StatusBar,
-} from 'react-native';
+import {Image, SafeAreaView, StyleSheet, Text, View} from 'react-native';
 
 const App: () => React$Node = () => {
   return (
@@ -33,7 +26,10 @@ const App: () => React$Node = () => {
         <View>
           <Text style={styles.pointCounter}>$209</Text>
           <View style={styles.avatarContainer}>
-            <Text>Hello World!</Text>
+            <Image
+              source={require('../assets/images/Idle.gif')}
+              style={styles.avatar}
+            />
           </View>
         </View>
       </SafeAreaView>
@@ -49,6 +45,7 @@ const styles = StyleSheet.create({
   },
 
   appTitle: {
+    fontFamily: 'Connection III',
     fontWeight: '900',
     fontSize: 24,
     marginBottom: 100,
@@ -56,9 +53,11 @@ const styles = StyleSheet.create({
   },
 
   pointCounter: {
-    marginLeft: 8,
-    marginBottom: 4,
+    fontFamily: 'Connection III',
+    fontSize: 16,
     fontWeight: '600',
+    marginLeft: 4,
+    marginBottom: 4,
   },
 
   avatarContainer: {
@@ -66,9 +65,15 @@ const styles = StyleSheet.create({
     width: 300,
     borderWidth: 1,
     borderColor: '#000',
-    borderRadius: 16,
+    borderRadius: 8,
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'flex-end',
+    padding: 4,
+  },
+
+  avatar: {
+    width: 32,
+    height: 32,
   },
 });
 
